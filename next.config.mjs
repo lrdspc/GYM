@@ -10,7 +10,20 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true,
 }
 
 const pwaConfig = withPWA({
@@ -18,6 +31,7 @@ const pwaConfig = withPWA({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.(?:gstatic|googleapis)\.com\/.*/i,
@@ -42,7 +56,7 @@ const pwaConfig = withPWA({
       },
     },
     {
-      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
+      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp|avif)$/i,
       handler: 'StaleWhileRevalidate',
       options: {
         cacheName: 'static-image-assets',
