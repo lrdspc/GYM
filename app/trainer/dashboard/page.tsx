@@ -1,31 +1,38 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Users, Calendar, TrendingUp, MessageCircle, Plus, User, Search } from "lucide-react"
-import Link from "next/link"
-
-import { DashboardLayout } from "@/components/optimized/DashboardLayout"
-import { StatsCard, GRADIENT_CLASSES } from "@/components/optimized/StatsCard"
-import { useOptimizedStudents, useOptimizedNotifications } from "@/lib/optimizations/DataManager"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
+import { Bell, Plus, Users, Calendar, TrendingUp, LogOut, MessageCircle, User, Search, Menu } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { MOCK_STUDENTS, getNotificationsByUser } from "@/lib/mock-data"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 export default function TrainerDashboard() {
   const router = useRouter()
-  const { students, loading } = useOptimizedStudents()
-  const { notifications } = useOptimizedNotifications(1, "trainer")
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [students, setStudents] = useState(MOCK_STUDENTS)
+  const [notifications, setNotifications] = useState(getNotificationsByUser(1, "trainer"))
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const filteredStudents = students.filter(
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.email.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  const handleLogout = () => {
+    router.push("/")
+  }
 
   if (loading) {
     return (
@@ -39,44 +46,85 @@ export default function TrainerDashboard() {
   }
 
   return (
-    <DashboardLayout
-      title="Dashboard"
-      subtitle="Bem-vindo, João!"
-      userType="trainer"
-      notificationCount={notifications.length}
-      onLogout={() => router.push("/")}
-    >
-      <div className="mobile-stack">
+    <div className="min-h-screen bg-gray-50 safe-area-bottom">
+      {/* Mobile Header */}
+      <header className="mobile-header">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-xl">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold">Dashboard</h1>
+                <p className="text-sm text-gray-500">Bem-vindo, João!</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Notifications */}
+              <Button variant="ghost" size="sm" className="relative touch-target">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {notifications.length}
+                </span>
+              </Button>
+
+              {/* Menu */}
+              <Button variant="ghost" size="sm" className="touch-target">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="px-4 py-6 mobile-stack">
         {/* Stats Cards */}
         <div className="mobile-grid gap-3">
-          <StatsCard
-            title="Alunos"
-            value={students.length}
-            subtitle="+2 novos"
-            icon={Users}
-            gradient={GRADIENT_CLASSES.blue}
-          />
-          <StatsCard
-            title="Planos"
-            value="7"
-            subtitle="Ativos"
-            icon={Calendar}
-            gradient={GRADIENT_CLASSES.green}
-          />
-          <StatsCard
-            title="Engajamento"
-            value="85%"
-            subtitle="+5% mês"
-            icon={TrendingUp}
-            gradient={GRADIENT_CLASSES.purple}
-          />
-          <StatsCard
-            title="Mensagens"
-            value="12"
-            subtitle="3 não lidas"
-            icon={MessageCircle}
-            gradient={GRADIENT_CLASSES.orange}
-          />
+          <Card className="mobile-card bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium opacity-90">Alunos</CardTitle>
+              <Users className="h-4 w-4 opacity-90" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{students.length}</div>
+              <p className="text-xs opacity-80">+2 novos</p>
+            </CardContent>
+          </Card>
+
+          <Card className="mobile-card bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium opacity-90">Planos</CardTitle>
+              <Calendar className="h-4 w-4 opacity-90" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">7</div>
+              <p className="text-xs opacity-80">Ativos</p>
+            </CardContent>
+          </Card>
+
+          <Card className="mobile-card bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium opacity-90">Engajamento</CardTitle>
+              <TrendingUp className="h-4 w-4 opacity-90" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">85%</div>
+              <p className="text-xs opacity-80">+5% mês</p>
+            </CardContent>
+          </Card>
+
+          <Card className="mobile-card bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium opacity-90">Mensagens</CardTitle>
+              <MessageCircle className="h-4 w-4 opacity-90" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">12</div>
+              <p className="text-xs opacity-80">3 não lidas</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}
@@ -186,7 +234,63 @@ export default function TrainerDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Recent Notifications */}
+        <Card className="mobile-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              Notificações Recentes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {notifications.slice(0, 3).map((notification) => (
+                <div key={notification.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div
+                    className={`w-2 h-2 rounded-full mt-2 ${
+                      notification.type === "workout"
+                        ? "bg-green-500"
+                        : notification.type === "message"
+                          ? "bg-blue-500"
+                          : "bg-purple-500"
+                    }`}
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm">{notification.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button variant="outline" className="w-full mt-4 mobile-button bg-transparent">
+              Ver Todas as Notificações
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-    </DashboardLayout>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t safe-area-bottom">
+        <div className="flex justify-around py-2">
+          <Button variant="ghost" className="flex-1 flex-col gap-1 h-16 touch-target">
+            <Users className="h-5 w-5" />
+            <span className="text-xs">Alunos</span>
+          </Button>
+          <Button variant="ghost" className="flex-1 flex-col gap-1 h-16 touch-target">
+            <Calendar className="h-5 w-5" />
+            <span className="text-xs">Planos</span>
+          </Button>
+          <Button variant="ghost" className="flex-1 flex-col gap-1 h-16 touch-target">
+            <MessageCircle className="h-5 w-5" />
+            <span className="text-xs">Mensagens</span>
+          </Button>
+          <Button variant="ghost" className="flex-1 flex-col gap-1 h-16 touch-target" onClick={handleLogout}>
+            <LogOut className="h-5 w-5" />
+            <span className="text-xs">Sair</span>
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
