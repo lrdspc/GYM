@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LucideIcon } from 'lucide-react';
+import { DivideIcon as LucideIcon } from 'lucide-react';
 
 // Optimized stats card - reduces repetitive code by 80%
 interface StatsCardProps {
