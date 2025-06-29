@@ -2,11 +2,49 @@
   "name": "FitTrainer Pro",
   "short_name": "FitTrainer",
   "description": "Personal trainer and student management app",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
   "background_color": "#f8fafc",
   "theme_color": "#3b82f6",
   "orientation": "portrait",
+  "scope": "/",
+  "id": "/",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "handle_links": "preferred",
+  "categories": ["fitness", "health", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view of FitTrainer Pro"
+    },
+    {
+      "src": "/screenshot-2.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of FitTrainer Pro"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/trainer/dashboard",
+      "description": "View your trainer dashboard",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Students",
+      "url": "/trainer/students",
+      "description": "View your students",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -20,5 +58,38 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "file_handlers": [
+    {
+      "action": "/open-workout",
+      "accept": {
+        "application/json": [".workout"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+fittrainer",
+      "url": "/protocol?type=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "workout",
+          "accept": ["application/json", ".workout"]
+        }
+      ]
+    }
+  }
 }
